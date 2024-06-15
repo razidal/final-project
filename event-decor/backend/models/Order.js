@@ -1,21 +1,24 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const OrderSchema = new mongoose.Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  items: [{ type: Schema.Types.ObjectId, ref: 'ShoppingCartItem', required: true }],
-  totalAmount: { type: Number, required: true },
-  status: { type: String, required: true }
+const ShoppingCartItemSchema = new Schema({
+  itemId: { type: String, required: true },
+  product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },  // References either Flower or BuffetDecoration
+  quantity: { type: Number, required: true },
+  price: { type: Number, required: true }
 });
 
-OrderSchema.methods = {
-  processPayment: function(paymentInfo) {
-    // Add payment processing logic here
-  },
-  updateOrderStatus: function(status) {
-    this.status = status;
-    return this.save();
-  }
-};
+const OrderSchema = new Schema({
+  orderId: { type: String, required: true, unique: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },  // Reference to User
+  items: [ShoppingCartItemSchema],
+  totalAmount: { type: Number, required: true },
+  status: { type: String, required: true, enum: ['Pending', 'Processed', 'Shipped', 'Delivered', 'Cancelled'] },
+  paymentInfo: { type: Schema.Types.ObjectId, ref: 'PaymentInfo', required: true }  // Reference to PaymentInfo
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Order', OrderSchema);
+const Order = mongoose.model('Order', OrderSchema);
+
+module.exports = Order;
