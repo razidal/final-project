@@ -1,12 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const userRoutes = require('./routes/user');
-const orderRoutes = require('./routes/order');
-const productRoutes = require('./routes/product');
-const buffetDecorationRoutes = require('./routes/buffetDecoration');
-const flowerRoutes = require('./routes/flower');
-const paymentRoutes = require('./routes/payment');
+const userRoutes = require('./backend/routes/user');
+const orderRoutes = require('./backend/routes/order');
+const productRoutes = require('./backend/routes/product');
+const buffetDecorationRoutes = require('./backend/routes/buffetDecoration');
+const flowerRoutes = require('./backend/routes/flower');
+const paymentRoutes = require('./backend/routes/payment');
+const reportRoutes = require('./backend/routes/report');
 
 require('dotenv').config();
 
@@ -27,6 +28,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/buffet-decorations', buffetDecorationRoutes);
 app.use('/api/flowers', flowerRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Start the server
 app.listen(PORT, () => {

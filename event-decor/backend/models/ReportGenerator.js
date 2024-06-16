@@ -1,12 +1,46 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const Order = require('../models/Order');
 
-const ReportGeneratorSchema = new mongoose.Schema({});
+class ReportGenerator {
+  // Generate sales report
+  async generateSalesReport(startDate, endDate) {
+    try {
+      const orders = await Order.find({
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        }
+      }).populate('items.product');
 
-ReportGeneratorSchema.methods = {
-  generateSalesReport: function() {
-    // Add logic to generate sales report
+      let totalSales = 0;
+      const productSales = {};
+
+      orders.forEach(order => {
+        totalSales += order.totalAmount;
+        order.items.forEach(item => {
+          const productId = item.product._id;
+          const productName = item.product.name;
+
+          if (!productSales[productId]) {
+            productSales[productId] = {
+              name: productName,
+              quantity: 0,
+              revenue: 0
+            };
+          }
+
+          productSales[productId].quantity += item.quantity;
+          productSales[productId].revenue += item.price * item.quantity;
+        });
+      });
+
+      return {
+        totalSales,
+        productSales
+      };
+    } catch (error) {
+      throw new Error('Error generating sales report: ' + error.message);
+    }
   }
-};
+}
 
-module.exports = mongoose.model('ReportGenerator', ReportGeneratorSchema);
+module.exports = new ReportGenerator();
