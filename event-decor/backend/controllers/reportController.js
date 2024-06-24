@@ -1,4 +1,4 @@
-const ReportGenerator = require('../utils/ReportGenerator');
+const ReportGenerator = require('../models/ReportGenerator');
 
 exports.getSalesReport = async (req, res) => {
   try {
