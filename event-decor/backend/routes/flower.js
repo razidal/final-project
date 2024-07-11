@@ -1,12 +1,11 @@
 const express = require('express');
-const router = express.Router();
-const flowerController = require('../controllers/flowerController');
+const { addFlowerHandler, removeFlowerHandler, updateFlowerHandler, getFlowerByIdHandler } = require('../controllers/flowerController');
 
-// Define routes
-router.post('/', flowerController.addFlower);
-router.delete('/:id', flowerController.removeFlower);
-router.put('/:id', flowerController.updateFlower);
-router.get('/:id', flowerController.getFlowerById);
-router.get('/', flowerController.getAllFlowers);
+const router = express.Router();
+
+router.post('/', addFlowerHandler);
+router.delete('/:id', removeFlowerHandler);
+router.put('/:id', updateFlowerHandler);
+router.get('/:id', getFlowerByIdHandler);
 
 module.exports = router;

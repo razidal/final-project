@@ -1,17 +1,11 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { query } = require('../config/db');
 
-const ShoppingCartItemSchema = new mongoose.Schema({
-  product: { type: Schema.Types.ObjectId, refPath: 'productModel', required: true },
-  productModel: { type: String, required: true, enum: ['Flower', 'BuffetDecoration'] },
-  quantity: { type: Number, required: true },
-  price: { type: Number, required: true }
-});
+async function getItemTotalPrice(itemId) {
+    const text = 'SELECT price * quantity AS total_price FROM shopping_cart_items WHERE item_id = $1';
+    const res = await query(text, [itemId]);
+    return res.rows[0].total_price;
+}
 
-ShoppingCartItemSchema.methods = {
-  getItemTotalPrice: function() {
-    return this.price * this.quantity;
-  }
+module.exports = {
+    getItemTotalPrice,
 };
-
-module.exports = mongoose.model('ShoppingCartItem', ShoppingCartItemSchema);

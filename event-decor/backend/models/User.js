@@ -1,36 +1,26 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const Schema = mongoose.Schema;
+const { query } = require('../config/db');
 
-const UserSchema = new Schema({
-  userId: { type: String, required: true, unique: true },
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-}, {
-  timestamps: true
-});
+async function createUser(user) {
+    const text = 'INSERT INTO users(username, password, email) VALUES($1, $2, $3) RETURNING *';
+    const values = [user.username, user.password, user.email];
+    const res = await query(text, values);
+    return res.rows[0];
+}
 
-// Pre-save middleware to hash the password
-UserSchema.pre('save', async function(next) {
-  if (this.isModified('password') || this.isNew) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      this.password = await bcrypt.hash(this.password, salt);
-      next();
-    } catch (error) {
-      next(error);
-    }
-  } else {
-    next();
-  }
-});
+async function getUserById(userId) {
+    const text = 'SELECT * FROM users WHERE user_id = $1';
+    const res = await query(text, [userId]);
+    return res.rows[0];
+}
 
-// Method to compare input password with hashed password in database
-UserSchema.methods.comparePassword = async function(password) {
-  return await bcrypt.compare(password, this.password);
+async function getUserByUsername(username) {
+    const text = 'SELECT * FROM users WHERE username = $1';
+    const res = await query(text, [username]);
+    return res.rows[0];
+}
+
+module.exports = {
+    createUser,
+    getUserById,
+    getUserByUsername,
 };
-
-const User = mongoose.model('User', UserSchema);
-
-module.exports = User;

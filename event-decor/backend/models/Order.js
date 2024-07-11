@@ -1,24 +1,34 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { query } = require('../config/db');
 
-const ShoppingCartItemSchema = new Schema({
-  itemId: { type: String, required: true },
-  product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },  // References either Flower or BuffetDecoration
-  quantity: { type: Number, required: true },
-  price: { type: Number, required: true }
-});
+async function createOrder(order) {
+    const text = 'INSERT INTO orders(user_id, total_amount, status) VALUES($1, $2, $3) RETURNING *';
+    const values = [order.user_id, order.total_amount, order.status];
+    const res = await query(text, values);
+    return res.rows[0];
+}
 
-const OrderSchema = new Schema({
-  orderId: { type: String, required: true, unique: true },
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },  // Reference to User
-  items: [ShoppingCartItemSchema],
-  totalAmount: { type: Number, required: true },
-  status: { type: String, required: true, enum: ['Pending', 'Processed', 'Shipped', 'Delivered', 'Cancelled'] },
-  paymentInfo: { type: Schema.Types.ObjectId, ref: 'PaymentInfo', required: true }  // Reference to PaymentInfo
-}, {
-  timestamps: true
-});
+async function getOrderById(orderId) {
+    const text = 'SELECT * FROM orders WHERE order_id = $1';
+    const res = await query(text, [orderId]);
+    return res.rows[0];
+}
 
-const Order = mongoose.model('Order', OrderSchema);
+async function updateOrder(orderId, order) {
+    const text = 'UPDATE orders SET user_id=$1, total_amount=$2, status=$3 WHERE order_id=$4 RETURNING *';
+    const values = [order.user_id, order.total_amount, order.status, orderId];
+    const res = await query(text, values);
+    return res.rows[0];
+}
 
-module.exports = Order;
+async function deleteOrder(orderId) {
+    const text = 'DELETE FROM orders WHERE order_id=$1 RETURNING *';
+    const res = await query(text, [orderId]);
+    return res.rows[0];
+}
+
+module.exports = {
+    createOrder,
+    getOrderById,
+    updateOrder,
+    deleteOrder,
+};

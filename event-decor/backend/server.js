@@ -18,4 +18,4 @@ app.use('/api/products', require('./routes/product'));
 app.use('/api/orders', require('./routes/order'));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port http://localhost:${PORT}`));

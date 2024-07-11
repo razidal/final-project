@@ -1,11 +1,14 @@
-const ReportGenerator = require('../models/ReportGenerator');
+const { generateSalesReport } = require('../models/ReportGenerator');
 
-exports.getSalesReport = async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
-    const report = await ReportGenerator.generateSalesReport(startDate, endDate);
-    res.status(200).json(report);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+async function generateReportHandler(req, res) {
+    try {
+        const report = await generateSalesReport();
+        res.status(200).json(report);
+    } catch (err) {
+        res.status(500).json({ error: 'Error generating sales report' });
+    }
+}
+
+module.exports = {
+    generateReportHandler,
 };

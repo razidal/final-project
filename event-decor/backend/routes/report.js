@@ -1,8 +1,8 @@
 const express = require('express');
-const router = express.Router();
-const reportController = require('../controllers/reportController');
+const { generateReportHandler } = require('../controllers/reportController');
 
-// Define routes
-router.get('/sales', reportController.getSalesReport);
+const router = express.Router();
+
+router.get('/sales', generateReportHandler);
 
 module.exports = router;

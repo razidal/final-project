@@ -1,16 +1,16 @@
-const mongoose = require('mongoose');
+import { Pool } from 'pg';
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect('mongodb://localhost:27017/eventdecor', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected...');
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
-  }
-};
+const pool = new Pool({
+  user: "postgres",
+  host: "localhost",
+  database: "eventdb",
+  password: "6plle2nmfr4m",
+  port: 1234,
+});
 
-module.exports = connectDB;
+async function query(text, params) {
+    const res = await pool.query(text, params);
+    return res;
+}
+
+export default { query };

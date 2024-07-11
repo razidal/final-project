@@ -1,10 +1,16 @@
 const express = require('express');
-const router = express.Router();
-const buffetDecorationController = require('../controllers/buffetDecorationController');
+const {
+    addDecorationHandler,
+    removeDecorationHandler,
+    updateDecorationHandler,
+    getDecorationByIdHandler,
+} = require('../controllers/buffetDecorationController');
 
-// Define routes
-router.post('/', buffetDecorationController.addDecoration);
-router.delete('/:id', buffetDecorationController.removeDecoration);
-router.put('/:id', buffetDecorationController.updateDecoration);
+const router = express.Router();
+
+router.post('/', addDecorationHandler);
+router.delete('/:id', removeDecorationHandler);
+router.put('/:id', updateDecorationHandler);
+router.get('/:id', getDecorationByIdHandler);
 
 module.exports = router;

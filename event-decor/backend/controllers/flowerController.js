@@ -1,64 +1,44 @@
-const Flower = require('../models/Flower');
+const { addFlower, removeFlower, updateFlower, getFlowerById } = require('../models/Flower');
 
-// Add a new flower
-exports.addFlower = async (req, res) => {
-  try {
-    const newFlower = new Flower(req.body);
-    await newFlower.save();
-    res.status(201).json({ message: 'Flower added successfully', flower: newFlower });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Remove a flower by ID
-exports.removeFlower = async (req, res) => {
-  try {
-    const flowerId = req.params.id;
-    const removedFlower = await Flower.findByIdAndDelete(flowerId);
-    if (!removedFlower) {
-      return res.status(404).json({ message: 'Flower not found' });
+async function addFlowerHandler(req, res) {
+    try {
+        const flower = await addFlower(req.body);
+        res.status(201).json(flower);
+    } catch (err) {
+        res.status(500).json({ error: 'Error adding flower' });
     }
-    res.status(200).json({ message: 'Flower removed successfully', flower: removedFlower });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+}
 
-// Update an existing flower by ID
-exports.updateFlower = async (req, res) => {
-  try {
-    const flowerId = req.params.id;
-    const updatedFlower = await Flower.findByIdAndUpdate(flowerId, req.body, { new: true });
-    if (!updatedFlower) {
-      return res.status(404).json({ message: 'Flower not found' });
+async function removeFlowerHandler(req, res) {
+    try {
+        const flower = await removeFlower(req.params.id);
+        res.status(200).json(flower);
+    } catch (err) {
+        res.status(500).json({ error: 'Error removing flower' });
     }
-    res.status(200).json({ message: 'Flower updated successfully', flower: updatedFlower });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+}
 
-// Get a flower by ID
-exports.getFlowerById = async (req, res) => {
-  try {
-    const flowerId = req.params.id;
-    const flower = await Flower.findById(flowerId);
-    if (!flower) {
-      return res.status(404).json({ message: 'Flower not found' });
+async function updateFlowerHandler(req, res) {
+    try {
+        const flower = await updateFlower(req.params.id, req.body);
+        res.status(200).json(flower);
+    } catch (err) {
+        res.status(500).json({ error: 'Error updating flower' });
     }
-    res.status(200).json({ flower });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+}
 
-// Get all flowers
-exports.getAllFlowers = async (req, res) => {
-  try {
-    const flowers = await Flower.find();
-    res.status(200).json({ flowers });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+async function getFlowerByIdHandler(req, res) {
+    try {
+        const flower = await getFlowerById(req.params.id);
+        res.status(200).json(flower);
+    } catch (err) {
+        res.status(500).json({ error: 'Error fetching flower' });
+    }
+}
+
+module.exports = {
+    addFlowerHandler,
+    removeFlowerHandler,
+    updateFlowerHandler,
+    getFlowerByIdHandler,
 };
